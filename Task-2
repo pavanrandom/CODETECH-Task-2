@@ -1,0 +1,61 @@
+# Step 1: Data Preparation
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load Iris dataset
+data = load_iris()
+X = data.data
+y = data.target
+
+# Split data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Standardize features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Step 2: Model Implementation
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "Decision Tree": DecisionTreeClassifier(),
+    "Random Forest": RandomForestClassifier()
+}
+
+# Step 3: Training the Models
+for name, model in models.items():
+    model.fit(X_train, y_train)
+
+# Step 4: Model Evaluation
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+results = {}
+for name, model in models.items():
+    y_pred = model.predict(X_test)
+    results[name] = {
+        "Accuracy": accuracy_score(y_test, y_pred),
+        "Precision": precision_score(y_test, y_pred, average='weighted'),
+        "Recall": recall_score(y_test, y_pred, average='weighted'),
+        "F1 Score": f1_score(y_test, y_pred, average='weighted')
+    }
+
+# Step 5: Comparison
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Convert results to DataFrame
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+# Plot the results
+results_df.plot(kind='bar', figsize=(10, 6))
+plt.title('Model Comparison')
+plt.ylabel('Score')
+plt.xticks(rotation=0)
+plt.legend(loc='upper left')
+plt.show()
